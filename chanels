@@ -1,0 +1,72 @@
+TIM_TypeDef *DAC_TIM[2];
+
+TM_DAC_SIGNAL_CHANEL_t zakres (0x00,0x01)
+
+
+
+
+TM_DAC_SIGNAL_Result_t Initi(TM_DAC_SIGNAL_CHANEL_t DACx, TIM_TypeDef* TIM)
+{
+	if (TIMx == TIM4)
+	DAC_TIM[DACx]=TIMx
+	else return;
+	dac_timer_set[DACx]=1;
+	if(DACx == TM_DAC1) GPIO_Pin = GPIO_PIN_4;
+	else if (DACx == TM_DAC1) GPIO_Pin = GPIO_PIN_5;
+	else return;
+	TM_GPIO_INIT(GPIOA,GPIO_Pin,TM_GPIO_MODE_AN,TM_GPIO_OTYPE_PP, TM_GPIO_PuPd_NOPULL,TM_GPIO_SpeedFast);
+	return 0;
+	
+}
+
+
+TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
+void TIM_Config(void);
+ 
+int main(void)
+{
+ 	TIM_Config();
+ 
+ 	/* Time base configuration */
+ 	TIM_TimeBaseStructure.TIM_Period = 2000 - 1;
+ 	TIM_TimeBaseStructure.TIM_Prescaler =42000 - 1;
+ 	TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+ 	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+ 	TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure);
+
+ /* TIM Interrupts enable */
+ TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
+ /* TIM3 enable counter */
+ TIM_Cmd(TIM3, ENABLE);
+ 
+while (1);
+}
+ 
+void TIM_Config(void)
+{
+ NVIC_InitTypeDef NVIC_InitStructure;
+ 
+/* TIM3 clock enable */
+ RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
+ 
+/* Enable the TIM3 gloabal Interrupt */
+ NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;
+ NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+ NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+ NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+ NVIC_Init(&NVIC_InitStructure);
+ 
+/* Initialize Leds mounted on STM324xG-EVAL board */
+ STM_EVAL_LEDInit(LED1);
+ /* Turn on LED1 */
+ STM_EVAL_LEDOn(LED1);
+}
+ 
+#ifdef USE_FULL_ASSERT
+ 
+void assert_failed(uint8_t* file, uint32_t line)
+{
+ while (1)
+ {}
+}
+#endif
